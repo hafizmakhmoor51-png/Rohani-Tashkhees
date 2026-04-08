@@ -1,0 +1,120 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'Jameel Noori Nastaliq';
+  src: url('https://cdn.jsdelivr.net/gh/alishamsi/jameel-noori-nastaliq-webfont@master/JameelNooriNastaliq.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/alishamsi/jameel-noori-nastaliq-webfont@master/JameelNooriNastaliq.woff') format('woff'),
+       url('https://cdn.jsdelivr.net/gh/alishamsi/jameel-noori-nastaliq-webfont@master/JameelNooriNastaliq.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-urdu: "Jameel Noori Nastaliq", "Noto Nastaliq Urdu", serif;
+  --font-nastaliq: "Jameel Noori Nastaliq", "Noto Nastaliq Urdu", serif;
+  --color-border: hsl(55 100% 30%);
+  --color-ring: hsl(55 100% 50%);
+  --color-background: hsl(145 100% 5%);
+  --color-foreground: hsl(55 100% 50%);
+  --color-accent: hsl(55 100% 50%);
+}
+
+:root {
+  --background: 145 100% 5%;
+  --foreground: 55 100% 50%;
+  --card: 145 100% 7%;
+  --card-foreground: 55 100% 50%;
+  --popover: 145 100% 5%;
+  --popover-foreground: 55 100% 50%;
+  --primary: 55 100% 50%;
+  --primary-foreground: 145 100% 5%;
+  --secondary: 145 50% 15%;
+  --secondary-foreground: 55 100% 50%;
+  --muted: 145 30% 15%;
+  --muted-foreground: 55 50% 70%;
+  --accent: 55 100% 50%;
+  --accent-foreground: 145 100% 5%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 55 100% 30%;
+  --input: 145 50% 15%;
+  --ring: 55 100% 50%;
+  --radius: 1rem;
+}
+
+html, body {
+  font-family: "Jameel Noori Nastaliq", "Noto Nastaliq Urdu", serif !important;
+  background-color: #002200;
+  color: #ffff00;
+  direction: rtl;
+  line-height: 2.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nastaliq {
+  font-family: var(--font-nastaliq);
+}
+
+/* Sufi Mystical Background - Solid Vibrant Green */
+.mystical-bg {
+  background: #002200;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 255, 0, 0.1) 0%, transparent 70%),
+    radial-gradient(circle at 100% 100%, rgba(255, 255, 0, 0.05) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+.glass-card {
+  background: rgba(0, 40, 0, 0.9); /* More solid green */
+  backdrop-filter: blur(10px);
+  border: 2px solid #ffff00; /* Yellow border */
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+.glass-card-hover {
+  transition: all 0.3s ease;
+}
+
+.glass-card-hover:hover {
+  background: rgba(0, 60, 0, 1);
+  border-color: #ffffff;
+  transform: scale(1.01);
+}
+
+.gold-glow {
+  filter: drop-shadow(0 0 10px #ffff00);
+}
+
+.text-gradient-gold {
+  color: #ffff00; /* Solid Yellow instead of gradient for clarity */
+}
+
+.text-yellow {
+  color: #ffff00;
+}
+
+/* Improve input text for Urdu */
+input, textarea {
+  font-family: var(--font-urdu) !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: #ffff00 !important;
+  border: 1px solid #ffff00 !important;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 0, 0.5) !important;
+}
+
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
