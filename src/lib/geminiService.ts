@@ -1,6 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize with a fallback to avoid crashing on load if key is missing
+const apiKey = process.env.GEMINI_API_KEY || "";
+const ai = new GoogleGenAI({ apiKey });
 
 export async function getSpiritualAnalysis(data: {
   name: string;
@@ -12,6 +14,10 @@ export async function getSpiritualAnalysis(data: {
   element: string;
   purpose?: string;
 }) {
+  if (!apiKey) {
+    return "معذرت، Gemini API کی کلید (API Key) سیٹ نہیں ہے۔ براہ کرم Vercel کے ڈیش بورڈ میں GEMINI_API_KEY سیٹ کریں۔";
+  }
+
   const prompt = `
     You are an expert in Ilm-ul-Adad (Numerology), Ilm-e-Jafar, Ilm-e-Raml, and Astrology.
     Provide a detailed spiritual analysis (Rohani Tashkhis) in URDU for the following person:
