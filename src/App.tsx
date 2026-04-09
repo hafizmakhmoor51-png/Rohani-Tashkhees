@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import html2pdf from 'html2pdf.js';
 import { 
   Moon, 
   Sun, 
@@ -32,6 +33,7 @@ export default function App() {
   const [dob, setDob] = useState('');
   const [purpose, setPurpose] = useState('');
   const [loading, setLoading] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<{
     abjadName: number;
     abjadMother: number;
@@ -79,6 +81,53 @@ export default function App() {
     setMotherName('');
     setDob('');
     setPurpose('');
+  };
+
+  const saveAsPDF = () => {
+    if (!reportRef.current) return;
+
+    const element = reportRef.current;
+    const opt = {
+      margin: 10,
+      filename: `Rohani_Report_${name || 'Saeel'}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true,
+        backgroundColor: '#002200',
+        onclone: (clonedDoc: Document) => {
+          // Fix for html2canvas not supporting oklch/oklab colors
+          // We add a style tag to the cloned document to override any problematic colors
+          const style = clonedDoc.createElement('style');
+          style.innerHTML = `
+            * {
+              /* Override any potential oklch/oklab usage with safe fallbacks */
+              border-color: #ffff00 !important;
+              outline-color: #ffff00 !important;
+              box-shadow: none !important;
+              /* Ensure the background and text colors are preserved correctly */
+              background-color: #002200 !important;
+              color: #ffff00 !important;
+            }
+            .glass-card {
+              background-color: rgba(0, 40, 0, 0.9) !important;
+              border: 2px solid #ffff00 !important;
+            }
+            .text-accent {
+              color: #ffff00 !important;
+            }
+            .gold-glow {
+              filter: none !important; /* Filters can also cause issues in some pdf engines */
+            }
+          `;
+          clonedDoc.head.appendChild(style);
+        }
+      },
+      jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+    };
+
+    // Add a temporary class to ensure styles are captured correctly if needed
+    html2pdf().set(opt).from(element).save();
   };
 
   return (
@@ -323,41 +372,50 @@ export default function App() {
               </div>
 
               {/* AI Analysis Report */}
-              <Card className="glass-card border-none overflow-hidden shadow-2xl">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent" />
-                <CardHeader className="bg-black/20 border-b border-white/5 py-8">
-                  <CardTitle className="nastaliq text-4xl text-gradient-gold text-center gold-glow">تفصیلی روحانی رپورٹ</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <ScrollArea className="h-[600px] p-8 md:p-12">
-                    <div className="prose prose-invert max-w-none">
-                      <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3, duration: 1 }}
-                        className="whitespace-pre-wrap leading-[2.8] text-xl text-right text-accent nastaliq"
-                      >
-                        {result.analysis}
-                      </motion.div>
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-                <CardFooter className="bg-black/20 border-t border-white/5 justify-center py-8 gap-6">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => window.print()} 
-                    className="h-14 px-8 border-accent/30 text-accent hover:bg-accent/10 text-xl nastaliq"
-                  >
-                    رپورٹ پرنٹ کریں
-                  </Button>
-                  <Button 
-                    onClick={reset}
-                    className="h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/80 text-xl nastaliq border border-accent/20"
-                  >
-                    نیا حساب کریں
-                  </Button>
-                </CardFooter>
-              </Card>
+              <div ref={reportRef}>
+                <Card className="glass-card border-none overflow-hidden shadow-2xl">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent" />
+                  <CardHeader className="bg-black/20 border-b border-white/5 py-8">
+                    <CardTitle className="nastaliq text-4xl text-gradient-gold text-center gold-glow">تفصیلی روحانی رپورٹ</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <ScrollArea className="h-auto min-h-[400px] p-8 md:p-12">
+                      <div className="prose prose-invert max-w-none">
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.3, duration: 1 }}
+                          className="whitespace-pre-wrap leading-[2.8] text-xl text-right text-accent nastaliq"
+                        >
+                          {result.analysis}
+                        </motion.div>
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                  <CardFooter className="bg-black/20 border-t border-white/5 justify-center py-8 gap-4 flex-wrap print:hidden">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => window.print()} 
+                      className="h-14 px-6 border-accent/30 text-accent hover:bg-accent/10 text-xl nastaliq"
+                    >
+                      پرنٹ کریں
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={saveAsPDF} 
+                      className="h-14 px-6 border-accent/30 text-accent hover:bg-accent/10 text-xl nastaliq flex items-center gap-2"
+                    >
+                      پی ڈی ایف سیو کریں
+                    </Button>
+                    <Button 
+                      onClick={reset}
+                      className="h-14 px-6 bg-primary text-primary-foreground hover:bg-primary/80 text-xl nastaliq border border-accent/20"
+                    >
+                      نیا حساب کریں
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
